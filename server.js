@@ -1,8 +1,54 @@
-const http = require('http'); // http package is intalled by default with node => Store package content in constant
+const app = require("./backend/app");
+const debug = require("debug")("node-angular");
+const http = require("http");
 
-// create server and store in constant
-const server = http.createServer((req, res) => {
-  res.end('This is my first response');
-});
+// make sure port is a valid number
+const normalizePort = val => {
+  var port = parseInt(val, 10);
 
-server.listen(process.env.PORT || 3000); // if not set, we will use 3000 (like for development).
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+};
+
+// checks type error occurs and logs error message
+const onError = error => {
+  if (error.syscall !== "listen") {
+    throw error;
+  }
+  const bind = typeof port === "string" ? "pipe " + port : "port " + port;
+  switch (error.code) {
+    case "EACCES":
+      console.error(bind + " requires elevated privileges");
+      process.exit(1);
+      break;
+    case "EADDRINUSE":
+      console.error(bind + " is already in use");
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+};
+
+const onListening = () => {
+  const addr = server.address();
+  const bind = typeof port === "string" ? "pipe " + port : "port " + port;
+  debug("Listening on " + bind);
+};
+
+const port = normalizePort(process.env.PORT || "3000");
+app.set("port", port);
+
+const server = http.createServer(app);
+server.on("error", onError);
+server.on("listening", onListening);
+server.listen(port);
