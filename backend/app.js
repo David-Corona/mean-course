@@ -1,6 +1,10 @@
 const express = require('express'); // express package installed
+const bodyParser = require("body-parser");
 
 const app = express(); // execute the package as a function, and it will return an express app
+
+app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({extended: false})); // another example
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*'); // Allow any domain to access
@@ -15,7 +19,15 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/api/posts', (req, res, next) => {
+app.post('/api/posts', (req, res, next) => {
+  const post = req.body; // body is the new field added by body-parser
+  console.log(post);
+  res.status(201).json({
+    message: 'Post added successfully!'
+  });
+});
+
+app.get('/api/posts', (req, res, next) => {
 
   const posts = [
     {
