@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 
 import { Post } from "./post.model";
@@ -9,8 +10,14 @@ export class PostsService {
   private posts: Post[] = [];
   private postsUpdated = new Subject<Post[]>(); // like an event emitter
 
+  constructor(private http: HttpClient) {}
+
   getPosts() {
-    return [...this.posts]; //copies the array
+    this.http.get<{message: string, posts: Post[]}>('http/localhost:3000/api/posts')
+      .subscribe((postData) => {
+        this.posts = postData.posts;
+        this.postsUpdated.next([...this.posts]);
+      });
   }
 
   // returns object which we can listen, but not emit. We can emit only from this file.
