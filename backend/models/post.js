@@ -7,4 +7,4 @@ const postSchema = mongoose.Schema({
 });
 
 // turn schema in to a model and export
-module.export = mongoose.model('Post', postSchema);
+module.exports = mongoose.model('Post', postSchema);

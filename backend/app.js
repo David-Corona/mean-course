@@ -6,7 +6,7 @@ const Post = require('./models/post');
 
 const app = express(); // execute the package as a function, and it will return an express app
 
-mongoose.connect("mongodb+srv://david:tWMNHqIbqTYJX4eT@cluster0.r9ofouf.mongodb.net/?retryWrites=true&w=majority")
+mongoose.connect("mongodb+srv://david:tWMNHqIbqTYJX4eT@cluster0.r9ofouf.mongodb.net/node-angular?retryWrites=true&w=majority")
 .then(() => {
   console.log("Connected to database!");
 })
@@ -35,7 +35,7 @@ app.post('/api/posts', (req, res, next) => {
     title: req.body.title, // body is the new field added by body-parser
     content: req.body.content
   });
-  console.log(post);
+  post.save();
   res.status(201).json({
     message: 'Post added successfully!'
   });
