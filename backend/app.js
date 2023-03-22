@@ -42,24 +42,13 @@ app.post('/api/posts', (req, res, next) => {
 });
 
 app.get('/api/posts', (req, res, next) => {
-
-  const posts = [
-    {
-      id: '1',
-      title: 'First Post',
-      content: 'Content of first post from server'
-    },
-    {
-      id: '2',
-      title: 'Second server Post',
-      content: 'Content of second post from server'
-    },
-  ];
-
-  res.status(200).json({
-    message: 'Posts fetched successfully!',
-    posts: posts
-  });
+  Post.find() // static method
+    .then(documents => {
+      res.status(200).json({
+        message: 'Posts fetched successfully!',
+        posts: documents
+      });
+    });
 });
 
 // export the app (and import it from server.js)
