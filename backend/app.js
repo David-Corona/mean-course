@@ -1,7 +1,18 @@
 const express = require('express'); // express package installed
 const bodyParser = require("body-parser");
+const mongoose = require('mongoose');
+
+const Post = require('./models/post');
 
 const app = express(); // execute the package as a function, and it will return an express app
+
+mongoose.connect("mongodb+srv://david:tWMNHqIbqTYJX4eT@cluster0.r9ofouf.mongodb.net/?retryWrites=true&w=majority")
+.then(() => {
+  console.log("Connected to database!");
+})
+.catch(() => {
+  console.log("Connection failed!");
+});
 
 app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({extended: false})); // another example
@@ -20,7 +31,10 @@ app.use((req, res, next) => {
 });
 
 app.post('/api/posts', (req, res, next) => {
-  const post = req.body; // body is the new field added by body-parser
+  const post = new Post({
+    title: req.body.title, // body is the new field added by body-parser
+    content: req.body.content
+  });
   console.log(post);
   res.status(201).json({
     message: 'Post added successfully!'
