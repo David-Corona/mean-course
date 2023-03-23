@@ -45,4 +45,14 @@ export class PostsService {
         this.postsUpdated.next([...this.posts]); // emits a new value, which is a copy of posts
       });
   }
+
+  deletePost(postId: string) {
+    this.http.delete("http://localhost:3000/api/posts/" + postId)
+    .subscribe(() => {
+      const updatedPosts = this.posts.filter(post => post.id !== postId); // takes out post with deleted id
+      this.posts = updatedPosts;
+      this.postsUpdated.next([...this.posts]); // updates the value in Angular
+      console.log("Deleted!");
+    });
+  }
 }

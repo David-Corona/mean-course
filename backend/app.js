@@ -18,14 +18,14 @@ app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({extended: false})); // another example
 
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*'); // Allow any domain to access
+  res.setHeader("Access-Control-Allow-Origin", "*"); // Allow any domain to access
   res.setHeader(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Request-With, Content-Type, Accept'
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
   ); // Incoming requests may have these headers, others will be blocked.
   res.setHeader(
-    'Accese-Control-Allow-Methods',
-    'GET, POST, PATCH, DELETE, OPTIONS'
+    "Access-Control-Allow-Methods",
+    "GET, POST, PATCH, DELETE, OPTIONS"
   ); // Only allows these methods, always add options
   next();
 });
@@ -49,6 +49,14 @@ app.get('/api/posts', (req, res, next) => {
         posts: documents
       });
     });
+});
+
+app.delete('/api/posts/:id', (req, res, next) => {
+  console.log(req.params.id); // params: Express property that gives access to parameters
+  Post.deleteOne({ _id: req.params.id}).then(result => {
+    console.log(result);
+    res.status(200).json({ message: 'Post deleted!'});
+  });
 });
 
 // export the app (and import it from server.js)
