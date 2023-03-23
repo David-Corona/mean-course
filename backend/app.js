@@ -25,7 +25,7 @@ app.use((req, res, next) => {
   ); // Incoming requests may have these headers, others will be blocked.
   res.setHeader(
     "Access-Control-Allow-Methods",
-    "GET, POST, PATCH, DELETE, OPTIONS"
+    "GET, POST, PUT, PATCH, DELETE, OPTIONS"
   ); // Only allows these methods, always add options
   next();
 });
@@ -43,6 +43,18 @@ app.post('/api/posts', (req, res, next) => {
   });
 });
 
+app.put("/api/posts/:id", (req, res, next) => {
+  const post = new Post({
+    _id: req.body.id,
+    title: req.body.title,
+    content: req.body.content
+  });
+  Post.updateOne({_id: req.params.id}, post).then(result => {
+    console.log(result);
+    res.status(200).json({message: 'Updated successfully!'});
+  });
+});
+
 app.get('/api/posts', (req, res, next) => {
   Post.find() // static method
     .then(documents => {
@@ -50,6 +62,17 @@ app.get('/api/posts', (req, res, next) => {
         message: 'Posts fetched successfully!',
         posts: documents
       });
+    });
+});
+
+app.get('/api/posts/:id', (req, res, next) => {
+  Post.findById(req.params.id)
+    .then(post => {
+      if (post) {
+        res.status(200).json(post);
+      } else {
+        res.status(404).json({message: "Post not found!"});
+      }
     });
 });
 
