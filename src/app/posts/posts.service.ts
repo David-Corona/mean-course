@@ -42,12 +42,15 @@ export class PostsService {
     return this.http.get<{_id: string, title: string, content: string}>("http://localhost:3000/api/posts/" + id);
   }
 
-  addPosts(title: string, content: string) {
-    const post: Post = {title: title, content: content};
-    this.http.post<{message: string, postId: string}>('http://localhost:3000/api/posts', post)
+  addPost(title: string, content: string, image: File) {
+    const postData = new FormData(); // allows to combite text and blob(file)
+    postData.append("title", title);
+    postData.append("content", content);
+    postData.append("image", image, title); // title is fileName
+
+    this.http.post<{message: string, postId: string}>('http://localhost:3000/api/posts', postData)
       .subscribe((responseData) => {
-        const id = responseData.postId;
-        post.id = id;
+        const post: Post = {id: responseData.postId, title: title, content: content};
         this.posts.push(post);
         this.postsUpdated.next([...this.posts]); // emits a new value, which is a copy of posts
         this.router.navigate(["/"]);
