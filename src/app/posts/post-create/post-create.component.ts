@@ -4,6 +4,7 @@ import { ActivatedRoute, ParamMap } from "@angular/router";
 
 import { PostsService } from "../posts.service";
 import { Post } from "../post.model";
+import { mimeType } from "./mime-type.validator";
 
 @Component({
   selector: 'app-post-create',
@@ -17,13 +18,15 @@ export class PostCreateComponent implements OnInit {
   post: Post | undefined;
   isLoading = false;
   form!: FormGroup;
+  imagePreview: string = "";
 
   constructor(public postsService: PostsService, public route: ActivatedRoute) {}
 
   ngOnInit() {
     this.form = new FormGroup({
       'title': new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]}),
-      'content': new FormControl(null, {validators: [Validators.required]})
+      'content': new FormControl(null, {validators: [Validators.required]}),
+      'image': new FormControl(null, {validators: [Validators.required], asyncValidators: [mimeType]})
     });
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('postId')) {
@@ -40,6 +43,20 @@ export class PostCreateComponent implements OnInit {
         this.postId = null;
       }
     });
+  }
+
+  onImagePicked(event: Event) {
+    // @ts-ignore: Object is possibly 'null'.
+    const file = (event.target as HTMLInputElement).files[0];
+    this.form.patchValue({image: file}); // patchValue targets a single control
+    this.form.get('image')?.updateValueAndValidity(); // informs Angular that value has changes and should reevaluate
+
+    // convert image to data url
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 
   onSavePost() {
