@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express'); // express package installed
 const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
@@ -16,6 +17,7 @@ mongoose.connect("mongodb+srv://david:tWMNHqIbqTYJX4eT@cluster0.r9ofouf.mongodb.
 
 app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({extended: false})); // another example
+app.use("/images", express.static(path.join("backend/images"))); // any request targeting /images will be allowed to continue
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*"); // Allow any domain to access
