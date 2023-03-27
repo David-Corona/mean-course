@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
 
 const postsRoutes = require('./routes/posts');
+const userRoutes = require('./routes/user');
 
 const app = express(); // execute the package as a function, and it will return an express app
 
@@ -33,6 +34,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/posts", postsRoutes);
+app.use("/api/user", userRoutes);
 
 // export the app (and import it from server.js)
 module.exports = app; // will export the app and all the middlewares attached to it
