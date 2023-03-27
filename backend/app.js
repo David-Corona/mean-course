@@ -8,7 +8,7 @@ const userRoutes = require('./routes/user');
 
 const app = express(); // execute the package as a function, and it will return an express app
 
-mongoose.connect("mongodb+srv://david:tWMNHqIbqTYJX4eT@cluster0.r9ofouf.mongodb.net/node-angular?retryWrites=true&w=majority")
+mongoose.connect("mongodb+srv://david:tWMNHqIbqTYJX4eT@cluster0.r9ofouf.mongodb.net/node-angular")
 .then(() => {
   console.log("Connected to database!");
 })
