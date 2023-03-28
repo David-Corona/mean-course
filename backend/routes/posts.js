@@ -66,8 +66,13 @@ router.put(
       content: req.body.content,
       imagePath: imagePath
     });
-    Post.updateOne({_id: req.params.id}, post).then(result => {
-      res.status(200).json({message: 'Updated successfully!'});
+    // updateOne will filter same id and same creator id
+    Post.updateOne({_id: req.params.id, creator: req.userData.userId}, post).then(result => {
+      if (result.modifiedCount > 0) { //result will contain prop modifiedCount which indicates if post has been updated
+        res.status(200).json({message: 'Updated successfully!'});
+      } else {
+        res.status(401).json({message: 'Not authorized!'});
+      }
     });
   }
 );
@@ -98,7 +103,7 @@ router.get('', (req, res, next) => {
 });
 
 router.get('/:id', (req, res, next) => {
-  Post.findById(req.params.id)
+  Post.findById(req.params.id) // params: Express property that gives access to parameters
     .then(post => {
       if (post) {
         res.status(200).json(post);
@@ -109,10 +114,13 @@ router.get('/:id', (req, res, next) => {
 });
 
 router.delete('/:id', checkAuth, (req, res, next) => {
-  console.log(req.params.id); // params: Express property that gives access to parameters
-  Post.deleteOne({ _id: req.params.id}).then(result => {
+  Post.deleteOne({ _id: req.params.id, creator: req.userData.userId}).then(result => {
     console.log(result);
-    res.status(200).json({ message: 'Post deleted!'});
+    if (result.deletedCount > 0) { //result will contain prop deletedCount which indicates if post has been deleted
+      res.status(200).json({message: 'Deleted successfully!'});
+    } else {
+      res.status(401).json({message: 'Not authorized!'});
+    }
   });
 });
 
