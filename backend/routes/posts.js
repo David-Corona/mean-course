@@ -64,7 +64,8 @@ router.put(
       _id: req.body.id,
       title: req.body.title,
       content: req.body.content,
-      imagePath: imagePath
+      imagePath: imagePath,
+      creator: req.user.userId
     });
     // updateOne will filter same id and same creator id
     Post.updateOne({_id: req.params.id, creator: req.userData.userId}, post).then(result => {
@@ -115,7 +116,6 @@ router.get('/:id', (req, res, next) => {
 
 router.delete('/:id', checkAuth, (req, res, next) => {
   Post.deleteOne({ _id: req.params.id, creator: req.userData.userId}).then(result => {
-    console.log(result);
     if (result.deletedCount > 0) { //result will contain prop deletedCount which indicates if post has been deleted
       res.status(200).json({message: 'Deleted successfully!'});
     } else {
