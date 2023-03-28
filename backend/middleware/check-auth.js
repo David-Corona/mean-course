@@ -9,7 +9,7 @@ module.exports = (req, res, next) => {
     next();
   } catch (error) { // if req.headers.authorization.split or jwt.verify fail
     res.status(401).json({
-      message: "Auth failed!"
+      message: "You are not authenticated!"
     });
   }
 }
