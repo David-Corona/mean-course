@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 
 const Post = require('../models/post');
+const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
 
@@ -27,40 +28,48 @@ const storage = multer.diskStorage({
   }
 });
 
-router.post('', multer({storage: storage}).single("image"),(req, res, next) => {
-  const url = req.protocol + '://' + req.get('host');
-  const post = new Post({
-    title: req.body.title, // body is the new field added by body-parser
-    content: req.body.content,
-    imagePath: url + "/images/" + req.file.filename
-  });
-  post.save().then(createdPost => {
-    res.status(201).json({
-      message: 'Post added successfully!',
-      post: {
-        ...createdPost, // copy all properties
-        id: createdPost._id // overwrite this one
-      }
-    });
-  });
-});
-
-router.put("/:id", multer({storage: storage}).single("image"), (req, res, next) => {
-  let imagePath = req.body.imagePath;
-  if(req.file) { //new uploaded
+router.post(
+  "",
+  checkAuth,
+  multer({storage: storage}).single("image"),(req, res, next) => {
     const url = req.protocol + '://' + req.get('host');
-    imagePath = url + "/images/" + req.file.filename;
+    const post = new Post({
+      title: req.body.title, // body is the new field added by body-parser
+      content: req.body.content,
+      imagePath: url + "/images/" + req.file.filename
+    });
+    post.save().then(createdPost => {
+      res.status(201).json({
+        message: 'Post added successfully!',
+        post: {
+          ...createdPost, // copy all properties
+          id: createdPost._id // overwrite this one
+        }
+      });
+    });
   }
-  const post = new Post({
-    _id: req.body.id,
-    title: req.body.title,
-    content: req.body.content,
-    imagePath: imagePath
-  });
-  Post.updateOne({_id: req.params.id}, post).then(result => {
-    res.status(200).json({message: 'Updated successfully!'});
-  });
-});
+);
+
+router.put(
+  "/:id",
+  checkAuth,
+  multer({storage: storage}).single("image"), (req, res, next) => {
+    let imagePath = req.body.imagePath;
+    if(req.file) { //new uploaded
+      const url = req.protocol + '://' + req.get('host');
+      imagePath = url + "/images/" + req.file.filename;
+    }
+    const post = new Post({
+      _id: req.body.id,
+      title: req.body.title,
+      content: req.body.content,
+      imagePath: imagePath
+    });
+    Post.updateOne({_id: req.params.id}, post).then(result => {
+      res.status(200).json({message: 'Updated successfully!'});
+    });
+  }
+);
 
 router.get('', (req, res, next) => {
   // url?page=2&test=david req.query => { page: '2', test: 'david' }
@@ -98,7 +107,7 @@ router.get('/:id', (req, res, next) => {
     });
 });
 
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', checkAuth, (req, res, next) => {
   console.log(req.params.id); // params: Express property that gives access to parameters
   Post.deleteOne({ _id: req.params.id}).then(result => {
     console.log(result);
