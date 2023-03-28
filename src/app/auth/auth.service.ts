@@ -1,17 +1,29 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Subject } from 'rxjs';
 
 import { AuthData } from "./auth-data.model";
+
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
 
-  private token: string = "";
+  private token: string | null = "";
+  private authStatusListener = new Subject<boolean>(); // is user auth?
+  private isAuthenticated = false;
 
   constructor(private http: HttpClient) {}
 
   getToken() {
     return this.token;
+  }
+
+  getIsAuth() {
+    return this.isAuthenticated;
+  }
+
+  getAuthStatusListener() {
+    return this.authStatusListener.asObservable(); // can't emit, only to listen
   }
 
   createUser(email: string, password: string) {
@@ -27,8 +39,19 @@ export class AuthService {
     const authData: AuthData = {email: email, password: password};
     this.http.post<{token: string}>("http://localhost:3000/api/user/login",authData)
       .subscribe(response => {
-        this.token = response.token;
+        const token = response.token;
+        this.token = token;
+        if (token) {
+          this.isAuthenticated = true;
+          this.authStatusListener.next(true);
+        }
       });
+  }
+
+  logout() {
+    this.token = null;
+    this.isAuthenticated = false;
+    this.authStatusListener.next(false);
   }
 
 }
