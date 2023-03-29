@@ -36,11 +36,11 @@ exports.updatePost = (req, res, next) => {
     title: req.body.title,
     content: req.body.content,
     imagePath: imagePath,
-    creator: req.user.userId
+    creator: req.userData.userId
   });
   // updateOne will filter same id and same creator id
   Post.updateOne({_id: req.params.id, creator: req.userData.userId}, post).then(result => {
-    if (result.modifiedCount > 0) { //result will contain prop modifiedCount which indicates if post has been updated
+    if (result.matchedCount > 0) { //result will contain prop modifiedCount which indicates if post has been updated
       res.status(200).json({message: 'Updated successfully!'});
     } else {
       res.status(401).json({message: 'Not authorized!'});
